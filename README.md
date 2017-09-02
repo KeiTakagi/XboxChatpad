@@ -28,19 +28,19 @@ TynyBasicではSerialからの入力や、PS/2キーボードから実際使用�
 使用例を参考にして置き替えてください。 
 
 使用例）
-#include <XboxChatpad.h>  
-
-XboxChatpad kb;  
-
-inline char c_getch(void) {  
-  char c = 0;  
-  keyEvent k = kb.read();  
-  if ( k.code && k.code != KEY_ERROR) {  
-     if (k.BREAK)c = k.code;//キーが押された時のキャラクターコードもしくは、キーコードを取得
-  }  
-  return c;  
-}  
-#define c_kbhit( ) kb.available()  
+<dl>
+<dd>#include <XboxChatpad.h></dd>
+<dd>XboxChatpad kb;</dd>
+<dd>inline char c_getch(void) {</dd>
+<dd>char c = 0;</dd>
+<dd>　　keyEvent k = kb.read();</dd>
+<dd>  if ( k.code && k.code != KEY_ERROR) {</dd>
+<dd>     if (k.BREAK)c = k.code;//キーが押された時のキャラクターコードもしくは、キーコードを取得</dd>
+<dd>  }</dd>
+<dd>return c;</dd>
+<dd>}</dd>
+<dd>#define c_kbhit( ) kb.available()</dd>
+</dl>
   
 Sirialx.available() ← c_kbhit()で置き換え  
 Sirialx.read()      ← c_getch()で置き換え  
