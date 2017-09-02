@@ -40,3 +40,5 @@ inline char c_getch(void) {
 
 Sirialx.available() ← c_kbhit()で置き換え 
 Sirialx.read()      ← c_getch()で置き換え 
+　　
+  
