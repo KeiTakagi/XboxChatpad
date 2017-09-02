@@ -1,44 +1,42 @@
-#Arduino STM32 Xbox Chatpad Clone ƒ‰ƒCƒuƒ‰ƒŠ
-**¦‚Ü‚¾A»ì“r’†‚Å‚·B‘å•‚Éd—l‚ª•ÏX‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B‚²—¹³‚­‚¾‚³‚¢B**  
-‚±‚Ìƒ‰ƒCƒuƒ‰ƒŠ[‚ÍAXBOX Chatpad clone(TYX-517PCB1 Ver2.5)‚ÆArduino‰»‚µ‚½STM32F103‚ğƒVƒŠƒAƒ‹‚ÅÚ‘±‚µAƒ{ƒ^ƒ“‰Ÿ‰ºî•ñ‚ğ•K—v‚ÈƒLƒƒƒ‰ƒNƒ^[ƒR[ƒh‚à‚µ‚­‚ÍAƒL[ƒR[ƒh‚Ö•ÏŠ·‚µ‚Ü‚·B  
-Xbox Chatpad‚Í3.3V‚Å“®ì‚µ‚Ü‚·B
-3.3V‚Å“®ì‚·‚éArduino DUE‚Å“®ì‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªŠm”F‚Í‚µ‚Ä‚¢‚Ü‚¹‚ñB
+# Arduino STM32 Xbox Chatpad Clone ãƒ©ã‚¤ãƒ–ãƒ©ãƒª   
+**â€»ã¾ã ã€è£½ä½œé€”ä¸­ã§ã™ã€‚å¤§å¹…ã«ä»•æ§˜ãŒå¤‰æ›´ã«ãªã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ã€‚ã”äº†æ‰¿ãã ã•ã„ã€‚**  
+ã“ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ¼ã¯ã€XBOX Chatpad clone(TYX-517PCB1 Ver2.5)ã¨ArduinoåŒ–ã—ãŸSTM32F103ã‚’ã‚·ãƒªã‚¢ãƒ«ã§æ¥ç¶šã—ã€ãƒœã‚¿ãƒ³æŠ¼ä¸‹æƒ…å ±ã‚’å¿…è¦ãªã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚³ãƒ¼ãƒ‰ã‚‚ã—ãã¯ã€ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ã¸å¤‰æ›ã—ã¾ã™ã€‚  
+Xbox Chatpadã¯3.3Vã§å‹•ä½œã—ã¾ã™ã€‚
+3.3Vã§å‹•ä½œã™ã‚‹Arduino DUEã§å‹•ä½œã™ã‚‹ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“ãŒç¢ºèªã¯ã—ã¦ã„ã¾ã›ã‚“ã€‚
 
-‚±‚Ìƒ‰ƒCƒuƒ‰ƒŠ‚ÍŸ‚ğQl‚Éì¬‚µ‚Ü‚µ‚½ 
-   ‚½‚Ü‹g‚³‚ñ      https://github.com/Tamakichi/ArduinoSTM32_PS2Keyboard 
-   Cliff L. Biffle http://cliffle.com/project/chatpad 
+ã“ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¯æ¬¡ã‚’å‚è€ƒã«ä½œæˆã—ã¾ã—ãŸ  
+	ãŸã¾å‰ã•ã‚“      https://github.com/Tamakichi/ArduinoSTM32_PS2Keyboard  
+	Cliff L. Biffle http://cliffle.com/project/chatpad  
+  
+  
+ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å®šç¾©ã‚’å¤‰æ›´ã—ãŸã„å ´åˆã¯XboxChatpad.cppã®sAsciiTable[] ã‚’å¤‰æ›´ã—ã¦ãã ã•ã„ã€‚
+é…åˆ—ã®é †ç•ªã¯ã€Normal, shifted, Green, orange , Peopleã«ãªã‚Šã¾ã™ã€‚
+
+STM32F103ã®ãƒ”ãƒ³ã¯Serial2ã§ã‚ã‚‹PA2(TX),ã€PA3(RX)ã‚’ä½¿ç”¨ã—ã¦ã„ã¾ã™ã€‚ 
+Chatpadã®RX(in)ãƒ”ãƒ³ã‚’STM32F103ã®TX(out)ãƒ”ãƒ³ã¸ã€Chatpadã®TX(out)ãƒ”ãƒ³ã‚’STM32F103ã®RX(in)ãƒ”ãƒ³ã¸æ¥ç¶šã—ã¾ã™ã€‚ 
+ã¾ãŸã€Chatpadã®3.3Vã¨GNDã‚‚åŒæ§˜ã«STM32F103ã®3.3Vã¨GNDã¸æ¥ç¶šã—ã¦ãã ã•ã„ã€‚ 
+
+åŸºæœ¬çš„ãªä½¿ã„æ–¹ã®ã‚µãƒ³ãƒ—ãƒ«ã¯ã€XboxChatpad_exsample.inoã«ç½®ã„ã¦ãŠãã¾ã™ã€‚ 
+Chatpadã¯é›»æºæŠ•å…¥ã‹ã‚‰2ç§’ã»ã©ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“ã€‚ã”æ³¨æ„ãã ã•ã„ã€‚ 
+
+TynyBasicã§ã¯Serialã‹ã‚‰ã®å…¥åŠ›ã‚„ã€PS/2ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‹ã‚‰å®Ÿéš›ä½¿ç”¨ã™ã‚‹éš›ã¯ã€Sirialx.available() Sirialx.read()ã¨ç½®ãæ›ãˆã‚‹ã“ã¨ã«ãªã‚‹ã‹ã¨æ€ã„ã¾ã™ã€‚ 
+ä½¿ç”¨ä¾‹ã‚’å‚è€ƒã«ç½®ãæ›¿ãˆã¦ãã ã•ã„ã€‚ 
+
+ä½¿ç”¨ä¾‹ï¼‰
+#include <XboxChatpad.h>  
+
+XboxChatpad kb;  
+
+inline char c_getch(void) {  
+  char c = 0;  
+  keyEvent k = kb.read();  
+  if ( k.code && k.code != KEY_ERROR) {  
+     if (k.BREAK)c = k.code;  
+  }  
+  return c;  
+}  
+#define c_kbhit( ) kb.available()  
 
 
-ƒL[ƒ{[ƒh‚Ì’è‹`‚ğ•ÏX‚µ‚½‚¢ê‡‚ÍXboxChatpad.cpp‚ÌsAsciiTable[] ‚ğ•ÏX‚µ‚Ä‚­‚¾‚³‚¢B
-”z—ñ‚Ì‡”Ô‚ÍANormal, shifted, Green, orange , People‚É‚È‚è‚Ü‚·B
-
-
-STM32F103‚Ìƒsƒ“‚ÍSerial2‚Å‚ ‚éPA2(TX),APA3(RX)‚ğg—p‚µ‚Ä‚¢‚Ü‚·B 
-Chatpad‚ÌRX(in)ƒsƒ“‚ğSTM32F103‚ÌTX(out)ƒsƒ“‚ÖAChatpad‚ÌTX(out)ƒsƒ“‚ğSTM32F103‚ÌRX(in)ƒsƒ“‚ÖÚ‘±‚µ‚Ü‚·B 
-‚Ü‚½AChatpad‚Ì3.3V‚ÆGND‚à“¯—l‚ÉSTM32F103‚Ì3.3V‚ÆGND‚ÖÚ‘±‚µ‚Ä‚­‚¾‚³‚¢B 
-
-Šî–{“I‚Èg‚¢•û‚ÌƒTƒ“ƒvƒ‹‚ÍAXboxChatpad_exsample.ino‚É’u‚¢‚Ä‚¨‚«‚Ü‚·B 
-Chatpad‚Í“dŒ¹“Š“ü‚©‚ç2•b‚Ù‚Ç‚Íg—p‚Å‚«‚Ü‚¹‚ñB‚²’ˆÓ‚­‚¾‚³‚¢B 
-
-TynyBasic‚Å‚ÍSerial‚©‚ç‚Ì“ü—Í‚âAPS/2ƒL[ƒ{[ƒh‚©‚çÀÛg—p‚·‚éÛ‚ÍASirialx.available() Sirialx.read()‚Æ’u‚«Š·‚¦‚é‚±‚Æ‚É‚È‚é‚©‚Æv‚¢‚Ü‚·B 
-g—p—á‚ğQl‚É’u‚«‘Ö‚¦‚Ä‚­‚¾‚³‚¢B 
-
-g—p—áj
-#include <XboxChatpad.h>
-
-XboxChatpad kb;
-
-inline char c_getch(void) {
-  char c = 0;
-  keyEvent k = kb.read();
-  if ( k.code && k.code != KEY_ERROR) {
-     if (k.BREAK)c = k.code;
-  }
-  return c;
-}
-#define c_kbhit( ) kb.available()
-
-
-Sirialx.available() © c_kbhit()‚Å’u‚«Š·‚¦  
-Sirialx.read()      © c_getch()‚Å’u‚«Š·‚¦  
-
+Sirialx.available() â† c_kbhit()ã§ç½®ãæ›ãˆ 
+Sirialx.read()      â† c_getch()ã§ç½®ãæ›ãˆ 
