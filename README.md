@@ -36,9 +36,7 @@ inline char c_getch(void) {
   return c;  
 }  
 #define c_kbhit( ) kb.available()  
-
-
-Sirialx.available() ← c_kbhit()で置き換え 
-Sirialx.read()      ← c_getch()で置き換え 
-　　
   
+Sirialx.available() ← c_kbhit()で置き換え  
+Sirialx.read()      ← c_getch()で置き換え  
+
