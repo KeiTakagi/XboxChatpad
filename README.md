@@ -1,8 +1,9 @@
 #Arduino STM32 Xbox Chatpad Clone ライブラリ
+
 ※まだ、製作途中です。大幅に仕様が変更になる可能性があります。ご了承ください。
 
-このライブラリーは、XBOX Chatpad clone(TYX-517PCB1 Ver2.5)とArduino化したSTM32F103をシリアルで接続し、ボタン押下情報を必要なアスキーコード、キーコード変換します。
-XBOX Chatpadは3.3Vで動作します。
+このライブラリーは、XBOX Chatpad clone(TYX-517PCB1 Ver2.5)とArduino化したSTM32F103をシリアルで接続し、ボタン押下情報を必要なキャラクターコードもしくは、キーコードへ変換します。
+Xbox Chatpadは3.3Vで動作します。
 3.3Vで動作するArduino DUEで、動作するかもしれませんが確認はしていません。
 
 このライブラリは次を参考に作成しました
@@ -10,8 +11,7 @@ XBOX Chatpadは3.3Vで動作します。
    Cliff L. Biffle http://cliffle.com/project/chatpad
 
 
-キーボードの定義を変更したい場合は、
-XboxChatpad.cppのsAsciiTable[] を変更してください。
+キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください。
 配列の順番は、Normal, shifted, Green, orange , Peopleになります。
 
 
@@ -22,10 +22,7 @@ ChatpadのRX(in)ピンをSTM32F103のTX(out)ピンへ、ChatpadのTX(out)ピンをSTM32F103の
 基本的な使い方のサンプルは、XboxChatpad_exsample.inoに置いておきます。
 Chatpadは電源投入から2秒ほどは使用できません。ご注意ください。
 
-コンパイルはArduino IDE 1.8.4 と
-
-TynyBasicではSerialからの入力や、PS/2キーボードからの
-実際使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います。
+TynyBasicではSerialからの入力や、PS/2キーボードから実際使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います。
 使用例を参考に置き替えてください。
 
 使用例）
