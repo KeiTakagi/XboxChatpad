@@ -34,9 +34,9 @@ TynyBasicではSerialからの入力や、PS/2キーボードから実際使用�
 <dd>inline char c_getch(void) {</dd>
 <dd>char c = 0;</dd>
 <dd>　　keyEvent k = kb.read();</dd>
-<dd>  if ( k.code && k.code != KEY_ERROR) {</dd>
-<dd>     if (k.BREAK)c = k.code;//キーが押された時のキャラクターコードもしくは、キーコードを取得</dd>
-<dd>  }</dd>
+<dd>　　if ( k.code && k.code != KEY_ERROR) {</dd>
+<dd>　　　　if (k.BREAK)c = k.code;//キーが押された時のキャラクターコードもしくは、キーコードを取得</dd>
+<dd>　　}</dd>
 <dd>return c;</dd>
 <dd>}</dd>
 <dd>#define c_kbhit( ) kb.available()</dd>
