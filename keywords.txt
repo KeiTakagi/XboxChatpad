@@ -1,0 +1,25 @@
+#######################################
+# Syntax Coloring Map XboxChatpad
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+keyEvent			KEYWORD1	XboxChatpad
+keyinfo				KEYWORD1	XboxChatpad
+
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin				KEYWORD2
+end					KEYWORD2
+init				KEYWORD2
+available			KEYWORD2
+read				KEYWORD2
+ctrl_LED			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
