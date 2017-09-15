@@ -3,8 +3,12 @@
 
 ## これは何？
 
-XBOX Chatpad clone(TYX-517PCB1 Ver2.5で確認)をArduino化したSTM32F103でキーボードとして使うためのライブラリです。
+XBOX Chatpad clone(TYX-517PCB1 Ver2.5で確認)を、Arduino化したSTM32F103でキーボードとして使うためのライブラリです。
 
+### ※動画のようにTinyBasicで動作させるたためには、TinyBasicの改造が必要です。本ライブラリを置き換えただけではTinyBasicでの動作はしません。ご注意ください。
+
+
+++++ 写真をクリックすると動画で再生されます ++++
 [![操作動画](./img/xboxchatpad001.jpg)](https://www.youtube.com/watch?v=LU9IOJWQZ0k&vl=ja)
 
 Xbox Chatpadは3.3Vで動作します。
@@ -16,15 +20,15 @@ Xbox Chatpadは3.3Vで動作します。
 
 ## Xbox Chatpadの改造
 
-### 1.ケースです
+### 1.ケース
 ![ケース](./img/xboxchatpad002.jpg)
-### 2.キーボードの前面です
+### 2.前面
 ![前面](./img/xboxchatpad003.jpg)
-### 3.キーボードの背面です
+### 3.背面
 ![背面](./img/xboxchatpad004.jpg)
 ### 4.分解します
 ![配線１](./img/xboxchatpad004a.jpg)
-### 5.基盤を取り出してください
+### 5.基盤を取り出します
 ![配線１](./img/xboxchatpad005.jpg)
 ### 6.不要な配線を取り除きます。必要な配線は以下の写真のようになります。
 ![配線２](./img/xboxchatpad006.jpg)
@@ -39,7 +43,7 @@ Xbox Chatpadは3.3Vで動作します。
 
 ## 使い方
 基本的な使い方のサンプルは、XboxChatpad_exsample.inoに置いておきます。
-Chatpadは電源投入から2～５V秒ほどは使用できません。ご注意ください。
+Chatpadは電源投入から2～５秒ほどは使用できません。ご注意ください。
 
 ## キーボードの定義を変えたい場合は？
 キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください。
