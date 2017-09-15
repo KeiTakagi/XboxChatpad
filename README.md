@@ -1,20 +1,20 @@
-# Arduino STM32 Xbox Chatpad Clone ライブラリ
-**※まだ、製作途中です。大幅に仕様が変更になる可能性があります。ご了承ください。**
+# Arduino STM32 Xbox Chatpad ライブラリ
+****※まだ、製作途中です。大幅に仕様が変更になる可能性があります。ご了承ください。****
 
 ## これは何？
 
-XBOX Chatpad clone(TYX-517PCB1 Ver2.5で確認)を、Arduino化したSTM32F103でキーボードとして使うためのライブラリです。
+Xbox Chatpadを、Arduino化したSTM32F103でキーボードとして使うためのライブラリです。Microsoft製のXbox Chatpadが入手しにくいので、比較的入手しやすいクローン(TYX-517PCB1 Ver2.5)を使用しています。
 
-### ※動画のようにTinyBasicで動作させるたためには、TinyBasicの改造が必要です。本ライブラリを置き換えただけではTinyBasicでの動作はしません。ご注意ください。
+****※動画のようにTinyBasicで動作させるたためには、TinyBasicの改造が必要です。本ライブラリを置き換えただけではTinyBasicでの動作はできません。ご注意ください。****
 
 
-++++ 写真をクリックすると動画で再生されます ++++
+++写真をクリックすると動画再生されます++
 [![操作動画](./img/xboxchatpad001.jpg)](https://www.youtube.com/watch?v=LU9IOJWQZ0k&vl=ja)
 
 Xbox Chatpadは3.3Vで動作します。
-3.3Vで動作するArduino Dueで動作するかもしれませんが、確認は行っていません。
+3.3Vで動作するArduino DUEで動作するかもしれません。が、確認は行っていません。
 
-本ライブラリは次を参考に作成しました
+本ライブラリは次を参考に作成しました。
 > - たま吉さん      https://github.com/Tamakichi/ArduinoSTM32_PS2Keyboard
 > - Cliff L. Biffle http://cliffle.com/project/chatpad
 
@@ -30,7 +30,7 @@ Xbox Chatpadは3.3Vで動作します。
 ![配線１](./img/xboxchatpad004a.jpg)
 ### 5.基盤を取り出します
 ![配線１](./img/xboxchatpad005.jpg)
-### 6.不要な配線を取り除きます。必要な配線は以下の写真のようになります。
+### 6.不要な配線を取り除きます。必要な配線は以下の写真を参考にしてください。
 ![配線２](./img/xboxchatpad006.jpg)
 
 配線ですが、上から、
@@ -39,7 +39,8 @@ Xbox Chatpadは3.3Vで動作します。
 - グレー : STM32F103のSerial2であるPA3へ接続
 - グリーン : GNDへ接続
 
-になります
+になります。
+****（配線の色に惑わされないよう注意）****
 
 ## 使い方
 基本的な使い方のサンプルは、XboxChatpad_exsample.inoに置いておきます。
@@ -49,8 +50,8 @@ Chatpadは電源投入から2～５秒ほどは使用できません。ご注意
 キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください。
 配列の順番は、Normal, shifted, Green, orange , Peopleになります。
 
-## Serial入力やキーボードライブラリと置き換えたい場合は？##
-TynyBasicではSerialからの入力や、PS/2キーボードから実際使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います。
+## Serial入力やキーボードライブラリと置き換えたい場合は？
+TynyBasicではSerialからの入力や、PS/2キーボードから使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います。
 使用例を参考に置き替えてください。
 
 使用例）
