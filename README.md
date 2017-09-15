@@ -5,8 +5,8 @@
 
 XBOX Chatpad clone(TYX-517PCB1 Ver2.5で確認)をArduino化したSTM32F103でキーボードとして使うためのライブラリです。
 
+++++下の写真をクリックすると動画再生されます++++
 [![操作動画](./img/xboxchatpad001.jpg)](https://www.youtube.com/watch?v=LU9IOJWQZ0k&vl=ja)
-++++クリックすると動画再生されます++++
 
 Xbox Chatpadは3.3Vで動作します。
 3.3Vで動作するArduino Dueで動作するかもしれませんが、確認は行っていません。
