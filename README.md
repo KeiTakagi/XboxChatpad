@@ -8,6 +8,7 @@ Xbox Chatpadを、Arduino化したSTM32F103でキーボードとして使うた�
 ****<span style="color:red;">※動画のようにTinyBasicで動作させるたためには、TinyBasicの改造が必要です。本ライブラリを置き換えただけではTinyBasicでの動作はできません。ご注意ください。</span>****
 
 ****写真をクリックすると動画再生されます****
+
 [![操作動画](./img/xboxchatpad001.jpg)](https://www.youtube.com/watch?v=LU9IOJWQZ0k&vl=ja)
 
 Xbox Chatpadは3.3Vで動作します。
