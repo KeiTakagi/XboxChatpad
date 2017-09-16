@@ -60,7 +60,7 @@ TynyBasicではSerialからの入力や、PS/2キーボードから使用する�
 
 XboxChatpad kb;
 inline char c_getch(void) {
-  char c = 0;
+  uint8_t c = 0;
   keyEvent k = kb.read();
   if ( k.code && k.code != KEY_ERROR) {
      if (k.BREAK)c = k.code;
