@@ -9,6 +9,9 @@
 //
 //
 
+// 2017/09/16 修正, 全体的な見直し、受信バケットの異常処理等追加 By Kei Takagi
+//
+
 #include <avr/pgmspace.h>
 #include "HardwareSerial.h"
 #include "wiring_private.h"
@@ -25,70 +28,71 @@ static const uint8_t InitMessage[]      = { 0x87, 0x02, 0x8C, 0x1F, 0xCC };
 // Xbox Chatpad 起きているか監視コマンド
 static const uint8_t KeepAwakeMessage[]  = { 0x87, 0x02, 0x8C, 0x1B, 0xD0 };
 
-// Normal, shifted, Green, orange , People
+// Normal, Shift  , Ctrl , Alt    , Win
+// Normal, Shift  , Green, Orange , People
 static const uint8_t AsciiTable[] PROGMEM = {
-  '7', '\'', 0 ,  0 ,  0 , /* 11 Key7 */
-  '6', '&',  0 ,  0 ,  0 , /* 12 Key6 */
-  '5', '%',  0 ,  0 ,  0 , /* 13 Key5 */
-  '4', '$',  0 ,  0 ,  0 , /* 14 Key4 */
-  '3', '#',  0 ,  0 ,  0 , /* 15 Key3 */
-  '2', '"',  0 ,  0 ,  0 , /* 16 Key2 */
-  '1', '!',  0 ,  0 ,  0 , /* 17 Key1 */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 18 Unused */
+  '7', '\'', 0 ,  0 ,  0 ,      /* 11 Key7 */
+  '6', '&',  0 ,  0 ,  0 ,      /* 12 Key6 */
+  '5', '%',  0 ,  0 ,  0 ,      /* 13 Key5 */
+  '4', '$',  0 ,  0 ,  0 ,      /* 14 Key4 */
+  '3', '#',  0 ,  0 ,  0 ,      /* 15 Key3 */
+  '2', '"',  0 ,  0 ,  0 ,      /* 16 Key2 */
+  '1', '!',  0 ,  0 ,  0 ,      /* 17 Key1 */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 18 Unused */
 
-  'u', 'U', '&',  0 ,  0 , /* 21 KeyU */
-  'y', 'Y', '^',  0 ,  0 , /* 22 KeyY */
-  't', 'T', '%',  0 , '\t', /* 23 KeyT */
-  'r', 'R', '#', '$',  0 , /* 24 KeyR */
-  'e', 'E',  0 ,  0 , 0x1B, /* 25 KeyE */
-  'w', 'W', '@',  0 ,  0 , /* 26 KeyW */
-  'q', 'Q', '!',  0 ,  0 , /* 27 KeyQ */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 28 Unused */
+  'u', 'U', '&',  0 ,  0 ,      /* 21 KeyU */
+  'y', 'Y', '^',  0 ,  0 ,      /* 22 KeyY */
+  't', 'T', '%',  0 , KEY_TAB,  /* 23 KeyT */
+  'r', 'R', '#', '$',  0 ,      /* 24 KeyR */
+  'e', 'E',  0 ,  0 , KEY_ESC,  /* 25 KeyE */
+  'w', 'W', '@',  0 ,  0 ,      /* 26 KeyW */
+  'q', 'Q', '!',  0 ,  0 ,      /* 27 KeyQ */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 28 Unused */
 
-  'j', 'J', '\'', '"',  0 , /* 31 KeyJ */
-  'h', 'H', '/', '\\',  0 , /* 32 KeyH */
-  'g', 'G',  0 ,  0 ,  0 , /* 33 KeyG */
-  'f', 'F', '}', '?',  0 , /* 34 KeyF */
-  'd', 'D', '{',  0 ,  0 , /* 35 KeyD */
-  's', 'S',  0 ,  0 ,  0 , /* 36 KeyS */
-  'a', 'A', '~',  0 ,  0 , /* 37 KeyA */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 38 Unused */
+  'j', 'J', '\'', '"',  0 ,     /* 31 KeyJ */
+  'h', 'H', '/', '\\',  0 ,     /* 32 KeyH */
+  'g', 'G',  0 ,  0 ,  0 ,      /* 33 KeyG */
+  'f', 'F', '}', '?',  0 ,      /* 34 KeyF */
+  'd', 'D', '{',  0 ,  0 ,      /* 35 KeyD */
+  's', 'S',  0 ,  0 ,  0 ,      /* 36 KeyS */
+  'a', 'A', '~',  0 ,  0 ,      /* 37 KeyA */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 38 Unused */
 
-  'n', 'N', '<',  0 ,  0 , /* 41 KeyN */
-  'b', 'B', '|', '+',  0 , /* 42 KeyB */
-  'v', 'V', '-', '_',  0 , /* 43 KeyV */
-  'c', 'C',  0 ,  0 ,  0 , /* 44 KeyC */
-  'x', 'X',  0 ,  0 ,  0 , /* 45 KeyX */
-  'z', 'Z', '`',  0 ,  0 , /* 46 KeyZ */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 47 Unused */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 48 Unused */
+  'n', 'N', '<',  0 ,  0 ,      /* 41 KeyN */
+  'b', 'B', '|', '+',  0 ,      /* 42 KeyB */
+  'v', 'V', '-', '_',  0 ,      /* 43 KeyV */
+  'c', 'C', KEY_CTRLC,  0 ,  0 ,/* 44 KeyC */
+  'x', 'X',  0 ,  0 ,  0 ,      /* 45 KeyX */
+  'z', 'Z', '`',  0 ,  0 ,      /* 46 KeyZ */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 47 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 48 Unused */
 
-  0x1C,  0 ,  0 ,  0 ,  0 , /* 51 KeyRight */
-  'm', 'M', '>',  0 ,  0 , /* 52 KeyM */
-  '.', '.', '?',  0 ,  0 , /* 53 KeyPeriod */
-  ' ', ' ', ' ', ' ',  0 , /* 54 KeySpace */
-  0x1D,  0 ,  0 ,  0 ,  0 , /* 55 KeyLeft */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 56 Unused */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 57 Unused */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 58 Unused */
+  KEY_RIGHTARROW,  0 , KEY_UPARROW,  0 ,  0 , /* 51 KeyRight */
+  'm', 'M', '>',  0 ,  0 ,      /* 52 KeyM */
+  '.', '.', '?',  0 ,  0 ,      /* 53 KeyPeriod */
+  ' ', ' ', ' ', ' ',  0 ,      /* 54 KeySpace  */
+  KEY_LEFTARROW,  0 , KEY_DOWNARROW,  0 ,  0 , /* 55 KeyLeft */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 56 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 57 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 58 Unused */
 
-  0 ,  0 ,  0 ,  0 ,  0 , /* 61 Unused */
-  ',', ',', ':', ';',  0 , /* 62 KeyComma */
-  '\n', '\n', '\n', '\n', '\n', /* 63 KeyEnter */
-  'p', 'P', ')', '=',  0 , /* 64 KeyP */
-  '0', '=',  0 ,  0 ,  0 , /* 65 Key0 */
-  '9', ')',  0 ,  0 ,  0 , /* 66 Key9 */
-  '8', '(',  0 ,  0 ,  0 , /* 67 Key8 */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 68 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,       /* 61 Unused */
+  ',', ',', ':', ';',  0 ,      /* 62 KeyComma */
+  KEY_LINE_FEED, KEY_LINE_FEED, KEY_LINE_FEED, KEY_LINE_FEED, KEY_LINE_FEED, /* 63 KeyEnter */
+  'p', 'P', ')', '=',  0 ,      /* 64 KeyP */
+  '0',  0 ,  0 ,  0 ,  0 ,      /* 65 Key0 */
+  '9', ')',  0 ,  0 ,  0 ,      /* 66 Key9 */
+  '8', '(',  0 ,  0 ,  0 ,      /* 67 Key8 */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 68 Unused */
 
-  '\b', '\b', '\b', '\b',  0 , /* 71 KeyBackspace */
-  'l', 'L', ']' ,  0 ,  0 , /* 72 KeyL */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 73 Unused */
-  0 ,  0 ,  0 ,  0 ,  0 , /* 74 Unused */
-  'o', 'O', '(' ,  0 ,  0 , /* 75 KeyO */
-  'i', 'I', '*' ,  0 ,  0 , /* 76 KeyI */
-  'k', 'K', '[' ,  0 ,  0 , /* 77 KeyK */
-  0 ,  0 ,  0 ,  0 ,  0   /* 78 Unused */
+  KEY_BACKSPACE, KEY_DELETE,  0 ,  0 ,  0 , /* 71 KeyBackspace */
+  'l', 'L', ']',  0 , KEY_CTRLL,/* 72 KeyL */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 73 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 74 Unused */
+  'o', 'O', '(',  0 ,  0 ,      /* 75 KeyO */
+  'i', 'I', '*',  0 ,  0 ,      /* 76 KeyI */
+  'k', 'K', '[',  0 ,  0 ,      /* 77 KeyK */
+   0 ,  0 ,  0 ,  0 ,  0        /* 78 Unused */
 };
 
 //
@@ -134,7 +138,6 @@ void XboxChatpad::end() {
 // 戻り値 0:正常終了、 0以外:異常終了
 uint8_t XboxChatpad::init() {
   _serial = NULL;
-  _last_modifiers = 0;
   _last_key0 = 0;
   _last_key1 = 0;
   _last_ping = 0;
@@ -144,17 +147,6 @@ uint8_t XboxChatpad::init() {
 // シリアルポートに何バイトのデータが到着しているかを返します。
 // 戻り値 シリアルバッファにあるデータのバイト数を返します 
 int XboxChatpad::available(void){
-  // KeepAwakeMessageを定期的に送信する必要があります。
-  // 送信しない場合、チャットパッドはスリープ状態に戻ります。
-  // 毎秒KeepAwakeMessageを送信します。
-
-  uint32_t time = millis();
-
-  if (time - _last_ping > 1000) {
-    _last_ping = time;
-    _serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
-  }
-
   return _serial->available();
 }
 
@@ -178,7 +170,7 @@ int XboxChatpad::available(void){
 //
 keyEvent XboxChatpad::read() {
   keyinfo  in = {.value = 0};// キーボード状態
-  uint8_t i, code, checksum = 0;
+  uint8_t i, code, checksum = 0, err;
   uint16_t index;
 
   // キーコードの初期化
@@ -188,13 +180,28 @@ keyEvent XboxChatpad::read() {
   // チャットパッドは、最大2つの同時キーを検出できます。
   // 押された1番目のキーのキーコードが4バイト目
   // 2つのキーが押されていると、押された2番目のキーのキーコードが5バイト目に格納されます
-  if (available() >= 8) {
+  int len = available();
+  if (8 <= len ) {
     //Chatpadからシリアル通信で8バイトのバケットを受け取ります。
-    for (uint8_t i = 0; i < 8; i++) _buffer[i] = _serial->read();
+    err = 1;
+    for (i = 0; i < 8; i++) {
+      //受信データを1バイト読み込みますが、バッファ中の読み取り位置は変更しません
+      //受信データから0xB4を見つけるまでパケットを捨てます
+      if ( _serial->peek() == 0xB4 ) {
+        if (i == 0){
+          err = 0;
+          break;
+        }
+      } else {
+        _serial->read();
+      }
+    }
+    if(err == 1)goto ERROR;
+
+    //Chatpadからシリアル通信で8バイトのバケットを受け取ります。
+    for (i = 0; i < 8; i++) _buffer[i] = _serial->read();
     //0xA5で始まる「ステータスレポート」パケットは使い方が不明なので破棄します。
-    if (_buffer[0] == 0xA5) goto ERROR;
     //0xB4から始まらないパケットは無視します
-    if (_buffer[0] != 0xB4) goto ERROR;
     //2バイト目が0xC5以外のパケットも無視します
     if (_buffer[1] != 0xC5) goto ERROR;
 
@@ -233,7 +240,6 @@ keyEvent XboxChatpad::read() {
     index = (((code - 0x11) & 0x70) >> 1) | ((code - 0x11) & 0x7);
     if (index >= (sizeof(AsciiTable) / 5)) goto ERROR;
 
-    uint8_t modifier_changes = modifiers ^ _last_modifiers;
     in.kevt.SHIFT = 0;  // Shiftキー
     in.kevt.CTRL  = 0;  // Ctrlキー
     in.kevt.ALT   = 0;  // Altキー
@@ -243,7 +249,6 @@ keyEvent XboxChatpad::read() {
     if ( modifiers & OrangeCircleMask )in.kevt.ALT = 1; // Altキー ON
     if ( modifiers & PeopleMask )in.kevt.GUI       = 1; // Windowsキー ON
 
-    _last_modifiers = modifiers;
     in.kevt.code =  0;
 
     //Xbox Chatpadの入力値を文字コードに変換
@@ -262,6 +267,7 @@ ERROR:
   in.value = KEY_ERROR;
 
 DONE:
+  GetUp();
   return in.kevt;
 }
 
@@ -275,4 +281,16 @@ DONE:
 //
 uint8_t XboxChatpad::ctrl_LED(uint8_t swCaps, uint8_t swNum, uint8_t swScrol) {
   return 0;
+}
+
+// 起きろコマンド送信
+void XboxChatpad::GetUp() {
+  // KeepAwakeMessageを定期的に送信する必要があります。
+  // 送信しない場合、チャットパッドはスリープ状態に戻ります。
+  // 毎秒KeepAwakeMessageを送信します。
+  uint32_t time = millis();
+  if (time - _last_ping > 1000) {
+    _last_ping = time;
+    _serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
+  }
 }
