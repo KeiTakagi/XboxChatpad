@@ -19,6 +19,7 @@ init				KEYWORD2
 available			KEYWORD2
 read				KEYWORD2
 ctrl_LED			KEYWORD2
+GetUp				KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
