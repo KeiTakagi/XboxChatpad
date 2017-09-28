@@ -4,6 +4,7 @@
 ## これは何？
 
 Xbox Chatpadを、Arduino化したSTM32F103でキーボードとして使うためのライブラリです。Microsoft製のXbox Chatpadが入手しにくいので、比較的入手しやすいクローン(TYX-517PCB1 Ver2.5)を使用しています。
+マイクロソフト製のChatpadでも動作を確認しました。
 
 ****<span style="color:red;">※動画のようにTinyBasicで動作させるたためには、TinyBasicの改造が必要です。本ライブラリを置き換えただけではTinyBasicでの動作はできません。ご注意ください。</span>****
 
@@ -31,6 +32,7 @@ Xbox Chatpadは3.3Vで動作します。
 ### 5.基盤を取り出します
 ![配線１](./img/xboxchatpad005.jpg)
 ### 6.不要な配線を取り除きます。必要な配線は以下の写真を参考にしてください。
+写真では、取り外したネジとワッシャーで止めていますが、キーボードの中心のボタンを強く押すと、意図しないキー反応があります。キーボードを押しても曲がらないよう、硬い板を当てるなど工夫してください。
 ![配線２](./img/xboxchatpad006.jpg)
 
 配線ですが、上から、
@@ -51,7 +53,7 @@ Chatpadは電源投入から2～５秒ほどは使用できません。ご注意
 配列の順番は、Normal, shifted, Green, orange , Peopleになります。
 
 ## Serial入力やキーボードライブラリと置き換えたい場合は？
-TynyBasicではSerialからの入力や、PS/2キーボードから使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います。
+TynyBasicではSerialからの入力や、PS/2キーボードライブラリと置き換えて使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います。
 使用例を参考に置き替えてください。
 
 使用例）
