@@ -12,7 +12,6 @@
 // 2017/09/16 修正, 全体的な見直し、受信バケットの異常処理等追加 By Kei Takagi
 //
 
-#include <avr/pgmspace.h>
 #include "HardwareSerial.h"
 #include "wiring_private.h"
 #include "wirish_time.h"
@@ -67,18 +66,18 @@ static const uint8_t AsciiTable[] PROGMEM = {
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 47 Unused */
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 48 Unused */
 
-  KEY_RIGHTARROW,  0 , KEY_UPARROW,  0 ,  0 , /* 51 KeyRight */
+  KEY_RIGHTARROW,  0 , KEY_DOWNARROW,  0 ,  0 , /* 51 KeyRight */
   'm', 'M', '>',  0 ,  0 ,      /* 52 KeyM */
   '.', '.', '?',  0 ,  0 ,      /* 53 KeyPeriod */
   ' ', ' ', ' ', ' ',  0 ,      /* 54 KeySpace  */
-  KEY_LEFTARROW,  0 , KEY_DOWNARROW,  0 ,  0 , /* 55 KeyLeft */
+  KEY_LEFTARROW,  0 , KEY_UPARROW,  0 ,  0 , /* 55 KeyLeft */
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 56 Unused */
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 57 Unused */
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 58 Unused */
 
    0 ,  0 ,  0 ,  0 ,  0 ,       /* 61 Unused */
   ',', ',', ':', ';',  0 ,      /* 62 KeyComma */
-  KEY_LINE_FEED, KEY_LINE_FEED, KEY_LINE_FEED, KEY_LINE_FEED, KEY_LINE_FEED, /* 63 KeyEnter */
+  KEY_ENTER, KEY_ENTER, KEY_ENTER, KEY_ENTER, KEY_ENTER, /* 63 KeyEnter */
   'p', 'P', ')', '=',  0 ,      /* 64 KeyP */
   '0',  0 ,  0 ,  0 ,  0 ,      /* 65 Key0 */
   '9', ')',  0 ,  0 ,  0 ,      /* 66 Key9 */
@@ -104,6 +103,7 @@ static const uint8_t AsciiTable[] PROGMEM = {
 uint8_t XboxChatpad::begin(HardwareSerial &serial) {
   uint8_t i, err = 0;
   err = init();
+
   if( err != 0 )goto ERROR;
 
   _serial = &serial;
@@ -130,6 +130,7 @@ ERROR:
 
 // 利用終了
 void XboxChatpad::end() {
+  if(_serial==NULL)return;
   _serial->end();
   return;
 }
@@ -147,6 +148,7 @@ uint8_t XboxChatpad::init() {
 // シリアルポートに何バイトのデータが到着しているかを返します。
 // 戻り値 シリアルバッファにあるデータのバイト数を返します 
 int XboxChatpad::available(void){
+  if(_serial==NULL)return 0;
   return _serial->available();
 }
 
@@ -172,6 +174,9 @@ keyEvent XboxChatpad::read() {
   keyinfo  in = {.value = 0};// キーボード状態
   uint8_t i, code, checksum = 0, err;
   uint16_t index;
+  int len;
+
+  if(_serial==NULL)goto ERROR;
 
   // キーコードの初期化
   in.value = KEY_NONE;
@@ -180,7 +185,7 @@ keyEvent XboxChatpad::read() {
   // チャットパッドは、最大2つの同時キーを検出できます。
   // 押された1番目のキーのキーコードが4バイト目
   // 2つのキーが押されていると、押された2番目のキーのキーコードが5バイト目に格納されます
-  int len = available();
+  len = available();
   if (8 <= len ) {
     //Chatpadからシリアル通信で8バイトのバケットを受け取ります。
     err = 1;
@@ -285,6 +290,7 @@ uint8_t XboxChatpad::ctrl_LED(uint8_t swCaps, uint8_t swNum, uint8_t swScrol) {
 
 // 起きろコマンド送信
 void XboxChatpad::GetUp() {
+	if(_serial==NULL)return;
   // KeepAwakeMessageを定期的に送信する必要があります。
   // 送信しない場合、チャットパッドはスリープ状態に戻ります。
   // 毎秒KeepAwakeMessageを送信します。

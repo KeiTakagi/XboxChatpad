@@ -29,14 +29,9 @@ class HardwareSerial;
 #define ALT_CODE         0x1000  // ALTあり
 #define GUI_CODE         0x2000  // GUIあり
 
-#define KEY_NONE          0     // 継続またはバッファに変換対象なし
-#define KEY_ERROR         0xFF  // キーコードエラー
+#define KEY_NONE          0      // 継続またはバッファに変換対象なし
+#define KEY_ERROR         255    // キーコードエラー
 
-#define KEY_INSERT        0
-#define KEY_HOME          0
-#define KEY_END           0
-#define KEY_PAGEUP        0
-#define KEY_PAGEDOWN      0
 #define KEY_CTRLC         3
 #define KEY_BACKSPACE     8
 #define KEY_TAB           9
@@ -44,11 +39,17 @@ class HardwareSerial;
 #define KEY_CTRLL         12
 #define KEY_ENTER         13
 #define KEY_ESC           27
-#define KEY_RIGHTARROW    28
-#define KEY_LEFTARROW     29
-#define KEY_UPARROW       30
-#define KEY_DOWNARROW     31
+#define KEY_RIGHTARROW    131
+#define KEY_LEFTARROW     130
+#define KEY_UPARROW       129
+#define KEY_DOWNARROW     128
+
 #define KEY_DELETE        127
+#define KEY_HOME          132
+#define KEY_INSERT        134
+#define KEY_PAGEDOWN      135
+#define KEY_PAGEUP        136
+#define KEY_END           137
 
 
 // キーボードイベント構造体
