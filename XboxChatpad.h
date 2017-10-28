@@ -10,16 +10,20 @@
 //
 
 // 2017/09/16 修正, 全体的な見直し、受信バケットの異常処理等追加 By Kei Takagi
+// 2017/10/28 修正: By Kei Takagi
+//            タイマ割り込みを使った監視、矢印キー、キー出力タイミング
 //
-
 
 #ifndef __XBOXCHATPAD_H__
 #define __XBOXCHATPAD_H__
 
 #include <stdint.h>
+#include "HardwareSerial.h"
+#include "wiring_private.h"
+#include "Arduino.h"
 
 // ハードウェアシリアルポート
-class HardwareSerial;
+static HardwareSerial *_serial;
 
 // 状態管理用
 #define BREAK_CODE       0x0100  // BREAKコード
@@ -51,7 +55,6 @@ class HardwareSerial;
 #define KEY_PAGEUP        136
 #define KEY_END           137
 
-
 // キーボードイベント構造体
 typedef struct  {
   uint8_t code  : 8; // code
@@ -73,12 +76,9 @@ typedef union {
 // クラス定義
 class XboxChatpad {
   private:
-    HardwareSerial *_serial;
     uint8_t _buffer[8];
     uint8_t _last_key0;
     uint8_t _last_key1;
-    uint32_t _last_ping;
-
   public:
     // キーボード利用開始
     uint8_t begin(HardwareSerial &);
@@ -86,14 +86,12 @@ class XboxChatpad {
     void end();
     // キーボード初期化
     uint8_t init();
-    // シリアルポートに何バイトのデータが到着しているかを返します。
+    // シリアルポートに何バイトのデータが到着しているかを返す
     int available(void);
     // キーボード入力の読み込み
     keyEvent read();
     // キーボード上LED制御
     uint8_t ctrl_LED(uint8_t swCaps, uint8_t swNum, uint8_t swScrol);
-    // 起きろコマンド送信
-    void GetUp();
 };
 
 #endif
