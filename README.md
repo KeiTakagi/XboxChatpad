@@ -2,31 +2,32 @@
 ※本バージョンはβ版です.大幅に仕様変更する可能性があります.
 ## これは何？
 Xbox ChatpadをArduino化したSTM32F103でキーボードとして使うためのライブラリです.
-Microsoft製のXbox Chatpadが入手しにくいため、比較的入手しやすいクローン(例えば、TYX-517PCB1 Ver2.5)を使用しています.
-Microsoft製のChatpadでも動作を確認しました.Microsoft製のChatpadはクローンより高速に起動します.
-日本語版のXbox Chatpadは、本ライブラリーで定義しているキーの配置と異なるため、印刷されているキーと違う動作をします.
+Microsoft製のXbox Chatpadで動作しますが、Microsoft製のXbox Chatpadが入手しにくいため、比較的入手しやすいクローン(例えば、TYX-517PCB1 Ver2.5)が代替品として使用出来ます.  
+Microsoft製のXbox Chatpadはクローンより高速に起動します.  
+注意点としまして、日本語版のXbox Chatpadは、本ライブラリーで定義しているキーの配置と異なるため、印刷されているキーと違う動作をします.
 
 ****<span style="color:red;">※動画のように豊四季 Tiny BASICで動作させるたためには、豊四季 Tiny BASICの[改造](#改造)が必要です.本ライブラリを置き換えただけではTiny BASICでの動作はできません.ご注意ください.</span>****
 
-****写真をクリックすると動画再生されます****
+****写真をクリックすると動画再生します****
 
 [![操作動画](./img/xboxchatpad001.jpg)](https://www.youtube.com/watch?v=LU9IOJWQZ0k&vl=ja)
 
 本ライブラリはSTM32F103CBを使用したBlue Pill、Black Pillで動作の確認をしています.
-本ライブラリは次を参考に作成しました.
+本ライブラリは次を参考に作成しています.
 > - たま吉さん      https://github.com/Tamakichi/ArduinoSTM32_PS2Keyboard
 > - Cliff L. Biffle http://cliffle.com/project/chatpad
 
 ## 著作権/使用条件(License)
-**このアーカイブに含まれるソースコード、テキスト及びデータ**の著作権は**Kei Takagi**が所有しています.
-Xbox Chatpadの改造や、本アプリケーションの使用は、使用者個人の責任のもとに行ってください.本アプリケーションを実行した結果について何らかの不具合が発生したとしても、作者は一切の責任を負いませんので、あらかじめご了承ください.
-著作権者の同意なしに金銭を伴う再配布を行う事を固く禁じます.
-この条件のもとで、利用、複写、改編、再配布を認めます.
+**このアーカイブに含まれるソースコード、テキスト及びデータ**の著作権は**Kei Takagi**が所有しています.  
+Xbox Chatpadの改造や、本アプリケーションの使用は、使用者個人の責任のもとに行ってください.  
+本アプリケーションを実行した結果について何らかの不具合が発生したとしても、作者は一切の責任を負いませんので、あらかじめご了承ください.  
+著作権者の同意なしに金銭を伴う再配布を行う事を固く禁じます.  
+この条件のもとで、利用、複写、改編、再配布を認めます.  
 
-また、**「豊四季 Tiny BASIC」**の著作権は開発者**のTetsuya Suzuki**氏にあります.
-**「豊四季 Tiny BASIC」**を使用した場合のプログラム利用については、オリジナル版の著作権者の配布条件に従うものとします.
-著作権者の同意なしに経済的な利益を得てはいけません.
-この条件のもとで、利用、複写、改編、再配布を認めます.
+**「豊四季 Tiny BASIC」**の著作権は開発者**のTetsuya Suzuki**氏にあります.  
+**「豊四季 Tiny BASIC」**を使用した場合のプログラム利用については、オリジナル版の著作権者の配布条件に従うものとします.  
+著作権者の同意なしに経済的な利益を得てはいけません.  
+この条件のもとで、利用、複写、改編、再配布を認めます.  
 
 ## Xbox Chatpadの改造
 ### 1.ケース
@@ -53,12 +54,16 @@ Xbox Chatpadの改造や、本アプリケーションの使用は、使用者�
 ****<span style="color:red;">（配線の色に惑わされないよう注意）</span>****
 
 ## 使い方
-基本的な使い方のサンプルは、XboxChatpad_exsample.inoに置いておきます.
-Xbox Chatpadクローンの場合、電源投入から2～5秒程使用できません.ご注意ください.
+基本的な使い方のサンプルは、XboxChatpad_exsample.inoに置いておきます.  
+最初にサンプルでXbox Chatpadの動作を確認してから豊四季 Tiny BASIC等で使用してください.  
+Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来ない時間があります.  
+気になる方はXboxChatpad.cppを修正してください.  
 
 <a name="改造"></a>
-## たま吉さんの豊四季 Tiny BASIC V0.85で使用したい場合は？
-****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/3a054f0a204bcd79331c085dd54248b6b46cd35c/ttbasic_v85_difference/ps22tty.cpp)を差し替えて下さい.****
+
+## たま吉さんの豊四季 Tiny BASIC V0.85で使用したい場合
+****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/3a054f0a204bcd79331c085dd54248b6b46cd35c/ttbasic_v85_difference/ps22tty.cpp)を差し替えてください.****
+
 ## キーボードに印刷されていないキー操作について
 |**動作**|**操作**|
 |--------|--------|
@@ -76,9 +81,10 @@ Xbox Chatpadクローンの場合、電源投入から2～5秒程使用できま
 |'|shift + 7|
 |(|shift + 8|
 |)|shift + 9|
-## キーボードの定義を変えたい場合は？
+
+## キーボードの定義を変えたい場合
 キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください.
-配列の順番は、Normal, shifted, Green, orange , Peopleになります.
+配列の順番は、Normal, shif, Green, orange , Peopleになります.
 
 ## 豊四季 Tiny BASIC以外で使いたい場合は？
 Serialからの入力や、PS/2キーボードライブラリと置き換えて使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います.
