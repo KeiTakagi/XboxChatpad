@@ -259,19 +259,19 @@ keyEvent XboxChatpad::read() {
     code = 0;
     if (key0 && key0 != _last_key0 && key0 != _last_key1) {
       code = key0;
-      in.kevt.BREAK = 1; //1:離した
+      in.kevt.BREAK = 0; //0:押した
     }
     if (key1 && key1 != _last_key0 && key1 != _last_key1) {
       code = key1;
-      in.kevt.BREAK = 1; //1:離した
+      in.kevt.BREAK = 0; //0:押した
     }
     if (_last_key0 && _last_key0 != key0 && _last_key0 != key1) {
       code = _last_key0;
-      in.kevt.BREAK = 0; //0:押した
+      in.kevt.BREAK = 1; //1:離した
     }
     if (_last_key1 && _last_key1 != key0 && _last_key1 != key1) {
       code = _last_key1;
-      in.kevt.BREAK = 0; //0:押した
+      in.kevt.BREAK = 1; //1:離した
     }
     _last_key0 = key0;
     _last_key1 = key1;
