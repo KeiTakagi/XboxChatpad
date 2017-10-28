@@ -63,7 +63,7 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 <a name="改造"></a>
 
 ## たま吉さんの豊四季 Tiny BASIC V0.85で使用したい場合
-****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/3a054f0a204bcd79331c085dd54248b6b46cd35c/ttbasic_v85_difference/ps22tty.cpp)を差し替えてください.****
+****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_v85_difference/ps22tty.cpp)を差し替えてください.****
 
 ## キーボードに印刷されていないキー操作について
 |**動作**|**操作**|
@@ -87,7 +87,17 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください.  
 配列の順番は、Normal, shif, Green, orange , Peopleになります.
 
-## 豊四季 Tiny BASIC以外で使いたい場合は？
+## キーリピートについて
+キーリピートの間隔を設定したい場合は、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_v85_difference/ps22tty.cpp)の以下の箇所を修正してください。
+
+```
+//ボタンを押してから2個目の文字が表示するまでのカウント
+#define REPEATCNT1 120000
+//ボタンのリピートカウント
+#define REPEATCNT2 10000
+```
+
+## 豊四季 Tiny BASIC以外で使いたい場合
 Serialからの入力や、PS/2キーボードライブラリと置き換えて使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います.  
 使用例を参考に置き換えてください.
 ```
@@ -100,7 +110,7 @@ inline char c_getch(void) {
   uint8_t c = 0;
   keyEvent k = kb.read();
   if ( k.code && k.code != KEY_ERROR) {
-     if (k.BREAK)c = k.code;
+     if (k.BREAK == 0)c = k.code; // キーを押した
   }
   return c;
 }
