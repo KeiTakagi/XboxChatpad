@@ -1,4 +1,4 @@
-ttbasic_v85_difference# Arduino STM32 Xbox Chatpad ライブラリ
+# Arduino STM32 Xbox Chatpad ライブラリ
 ※本バージョンはβ版です.大幅に仕様変更する可能性があります.
 ## これは何？
 Xbox ChatpadをArduino化したSTM32F103でキーボードとして使うためのライブラリです.
