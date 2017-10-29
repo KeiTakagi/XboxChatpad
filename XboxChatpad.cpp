@@ -12,22 +12,12 @@
 // 2017/09/16 修正: 全体的な見直し、受信バケットの異常処理等追加 By Kei Takagi
 // 2017/10/28 修正: By Kei Takagi
 //            タイマ割り込みを使った監視、矢印キー、キー出力タイミング
-// 2017/10/29 修正: By Kei Takagi
-//            キーリピート、キークリック時点での表示の廃止：
-//            理が重いと受信電文を取り逃がすため、キーを離したタイミングがとれない
-//            テスト機以外の構成でキーを押したときのチャタリングが起きやすい
 //
 
 #include "XboxChatpad.h"
 
 // タイマ割込間隔 1sec
 #define RATE 1000000
-
-// 電源投入からの待ち時間
-// チャットパットは電源投入後500ms以上待って
-// InitMessage（87 02 8C 1F CC）を送信する必要がある
-#define STARTWAIT 500
-
 // 日本語対応
 #define JAPAN_KEY 1
 
@@ -119,7 +109,9 @@ void handler_getup(void);
 uint8_t XboxChatpad::begin(HardwareSerial &serial) {
   uint8_t i, err = 0;
   err = init();
+
   if ( err != 0 )goto ERROR;
+
   _serial = &serial;
 
   // 電源投入後500ms以上待って
@@ -139,7 +131,7 @@ uint8_t XboxChatpad::begin(HardwareSerial &serial) {
 
   _serial->begin(19200);
   while (!_serial) delay(100);
-  delay(STARTWAIT);
+  delay(500);
   for (i = 0; i < 3; i++) {
     _serial->write(InitMessage, sizeof(InitMessage));
     delay(30);
@@ -157,11 +149,10 @@ ERROR:
 //  なし
 //
 void XboxChatpad::end() {
-  if (!_serial)return;
+  if (_serial == NULL)return;
   _serial->end();
   Timer3.pause();                   // タイマ停止
   Timer3.detachCompare1Interrupt(); // コンパレータ1解放
-  _serial = NULL;
   return;
 }
 
@@ -175,22 +166,23 @@ uint8_t XboxChatpad::init() {
   _serial = NULL;
   _last_key0 = 0;
   _last_key1 = 0;
+ 
   // タイマーの設定
   Timer3.pause();                                // タイマ停止
   Timer3.setChannel1Mode(TIMER_OUTPUTCOMPARE);   //
   Timer3.setPeriod(RATE);                        // in microseconds
   Timer3.setCompare1(1);                         // overflow might be small
   Timer3.attachCompare1Interrupt(handler_getup); // コンパレータ1にて割り込み発生
-  Timer3.refresh();                              // タイマ更新
+	Timer3.refresh();                              // タイマ更新
+
   return 0;
 }
 
 // シリアルポートに何バイトのデータが到着しているかを返す
 // 戻り値 シリアルバッファにあるデータのバイト数を返す
 int XboxChatpad::available(void) {
-  int ret=0;
-  if (_serial)ret = _serial->available();
-  return ret;
+  if (_serial == NULL)return 0;
+  return _serial->available();
 }
 
 // 入力キー情報の取得(CapsLock、NumLock、ScrollLockを考慮)
@@ -217,7 +209,7 @@ keyEvent XboxChatpad::read() {
   uint16_t index;
   int len;
 
-  if (!_serial)goto ERROR;
+  if (_serial == NULL)goto ERROR;
 
   // キーコードの初期化
   in.value = KEY_NONE;
@@ -246,11 +238,12 @@ keyEvent XboxChatpad::read() {
     if (err == 1)goto ERROR;
 
     //Chatpadからシリアル通信で8バイトのバケットを受取る
-    for (i = 0; i < 8; i++)_buffer[i] = _serial->read();
+    for (i = 0; i < 8; i++) _buffer[i] = _serial->read();
     //0xA5で始まる「ステータスレポート」パケットは使い方が不明なので破棄する
     //0xB4から始まらないパケットは無視する
     //2バイト目が0xC5以外のパケットも無視する
-   if (_buffer[1] != 0xC5) goto ERROR;
+    if (_buffer[1] != 0xC5) goto ERROR;
+
     //チェックサムの確認
     //7バイト目はチェックサム
     //0-6バイトを合計し、結果を否定（2の補数）することによって計算する
@@ -263,6 +256,7 @@ keyEvent XboxChatpad::read() {
     uint8_t key0      = _buffer[4];
     uint8_t key1      = _buffer[5];
 
+    code = 0;
     if (key0 && key0 != _last_key0 && key0 != _last_key1) {
       code = key0;
       in.kevt.BREAK = 0; //0:押した
@@ -279,13 +273,10 @@ keyEvent XboxChatpad::read() {
       code = _last_key1;
       in.kevt.BREAK = 1; //1:離した
     }
-
-    if (code < 0x11)goto ERROR;
-    code = code - 0x11;
-
     _last_key0 = key0;
     _last_key1 = key1;
 
+    code = code - 0x11;
     index = ((code & 0x70) >> 1) | (code & 0x7);
     if (index >= (sizeof(AsciiTable) / 5)) goto ERROR;
 
@@ -308,9 +299,10 @@ keyEvent XboxChatpad::read() {
     in.kevt.code = pgm_read_byte_near(AsciiTable + index);
     if (0x20 <= in.kevt.code && in.kevt.code <= 0x7e)in.kevt.KEY = 0;//表示可能文字コード
   }
+
   goto DONE;
 ERROR:
-    in.value = KEY_ERROR;
+  in.value = KEY_ERROR;
 DONE:
   return in.kevt;
 }
@@ -334,10 +326,12 @@ uint8_t XboxChatpad::ctrl_LED(uint8_t swCaps, uint8_t swNum, uint8_t swScrol) {
 //  なし
 //
 void handler_getup(void) {
+  if (_serial == NULL)return;
   // KeepAwakeMessageを定期的に送信する必要がある。
   // 送信しない場合、チャットパッドはスリープ状態に戻る
   // 毎秒KeepAwakeMessageを送信する
+  if (_serial == NULL)return;
   // 監視コマンド送信
-  if (_serial)_serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
+  _serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
 }
 

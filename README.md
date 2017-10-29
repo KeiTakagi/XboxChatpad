@@ -87,6 +87,16 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください.  
 配列の順番は、Normal, shif, Green, orange , Peopleになります.
 
+## キーリピートについて
+キーリピートの間隔を設定したい場合は、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_v85_difference/ps22tty.cpp)の以下の箇所を修正してください。
+
+```
+//ボタンを押してから2個目の文字が表示するまでのカウント
+#define REPEATCNT1 120000
+//ボタンのリピートカウント
+#define REPEATCNT2 10000
+```
+
 ## 豊四季 Tiny BASIC以外で使いたい場合
 Serialからの入力や、PS/2キーボードライブラリと置き換えて使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います.  
 使用例を参考に置き換えてください.
@@ -100,7 +110,7 @@ inline char c_getch(void) {
   uint8_t c = 0;
   keyEvent k = kb.read();
   if ( k.code && k.code != KEY_ERROR) {
-     if (k.BREAK)c = k.code; // キーを離した
+     if (k.BREAK == 0)c = k.code; // キーを押した
   }
   return c;
 }
@@ -109,8 +119,3 @@ inline char c_getch(void) {
 Sirialx.available() ← c_kbhit()で置き換え
 Sirialx.read()      ← c_getch()で置き換え
 ```
-## 現状の問題点
-- キーリピート機能は実装したところ、処理中にキーを離した状態を取得出来ないため見送ります.そのため、キーを離したタイミングで文字を表示する仕様とします.
-
-## 今後の予定について
-- 日本語キーボード対応
