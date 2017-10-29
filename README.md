@@ -1,11 +1,10 @@
 # Arduino STM32 Xbox Chatpad ライブラリ
-**[日本語表記](#日本語表記)のチャットパッドに対応しました**
-***※本バージョンはβ版です.大幅に仕様変更する可能性があります.***
-
+※本バージョンはβ版です.大幅に仕様変更する可能性があります.
 ## これは何？
-Xbox ChatpadをArduino化たSTM32F103でキーボードとして使うためのライブラリです.
+Xbox ChatpadをArduino化したSTM32F103でキーボードとして使うためのライブラリです.
 Microsoft製のXbox Chatpadで動作しますが、Microsoft製のXbox Chatpadが入手しにくいため、比較的入手しやすいクローン(例えば、TYX-517PCB1 Ver2.5)が代替品として使用出来ます.  
-Microsoft製のXbox Chatpadは、クローンより高速に起動します.  
+Microsoft製のXbox Chatpadはクローンより高速に起動します.  
+注意点としまして、日本語版のXbox Chatpadは、本ライブラリーで定義しているキーの配置と異なるため、印刷されているキーと違う動作をします.
 
 ****<span style="color:red;">※動画のように豊四季 Tiny BASICで動作させるたためには、豊四季 Tiny BASICの[改造](#改造)が必要です.本ライブラリを置き換えただけではTiny BASICでの動作はできません.ご注意ください.</span>****
 
@@ -62,6 +61,7 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 気になる方はXboxChatpad.cppを修正してください.  
 
 <a name="改造"></a>
+
 ## たま吉さんの豊四季 Tiny BASIC V0.85で使用したい場合
 ****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_v85_difference/ps22tty.cpp)を差し替えてください.****
 
@@ -82,17 +82,6 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 |'|shift + 7|
 |(|shift + 8|
 |)|shift + 9|
-
-<a name="日本語表記"></a>
-##日本語表記のXbox Chatpadを使用する場合
-「カナひら」「漢字」を押すとキーボードの印刷にない「.」「,」を表示します.
-XboxChatpad.cppの下記の箇所を修正してください
-```
-// キーボード日本語対応
-// #define JAPAN_KEY 0 //英語版
-// #define JAPAN_KEY 1 //日本語 
-#define JAPAN_KEY 0
-```
 
 ## キーボードの定義を変えたい場合
 キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください.  
@@ -124,4 +113,4 @@ Sirialx.read()      ← c_getch()で置き換え
 - キーリピートを実装したところ、処理中にキーを離した状態を取得出来ないため見送ります.そのため、キーを離したタイミングで文字を表示する仕様とします.
 
 ## 今後の予定について
-- なし
+- 日本語キーボード対応
