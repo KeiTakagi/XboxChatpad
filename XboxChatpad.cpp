@@ -16,6 +16,7 @@
 //            キーリピート、キークリック時点での表示の廃止：
 //            理が重いと受信バケットを取り逃がすため、キーを離したタイミングがとれない
 //            テスト機以外の構成でキーを押したときのチャタリングが起きやすい
+//            日本語キーボード対応
 //
 
 #include "XboxChatpad.h"
@@ -28,8 +29,10 @@
 // InitMessage（87 02 8C 1F CC）を送信する必要がある
 #define STARTWAIT 500
 
-// 日本語対応
-#define JAPAN_KEY 1
+// キーボード日本語対応
+// #define JAPAN_KEY 0 //英語版
+// #define JAPAN_KEY 1 //日本語 
+#define JAPAN_KEY 0
 
 static const uint8_t ShiftMask = (1 << 0);
 static const uint8_t GreenSquareMask = (1 << 1);
@@ -40,6 +43,75 @@ static const uint8_t PeopleMask = (1 << 3);
 static const uint8_t InitMessage[]      = { 0x87, 0x02, 0x8C, 0x1F, 0xCC };
 // Xbox Chatpad 起きているか監視コマンド
 static const uint8_t KeepAwakeMessage[]  = { 0x87, 0x02, 0x8C, 0x1B, 0xD0 };
+
+#if JAPAN_KEY == 1
+// Normal, Shift  , Ctrl , Alt    , Win
+// Normal, Shift  , Green, Orange , People
+static const uint8_t AsciiTable[] PROGMEM = {
+  '7', '\'', 0 ,  0 ,  0 ,      /* 11 Key7 */
+  '6', '&',  0 ,  0 ,  0 ,      /* 12 Key6 */
+  '5', '%',  0 ,  0 ,  0 ,      /* 13 Key5 */
+  '4', '$',  0 ,  0 ,  0 ,      /* 14 Key4 */
+  '3', '#',  0 ,  0 ,  0 ,      /* 15 Key3 */
+  '2', '"',  0 ,  0 ,  0 ,      /* 16 Key2 */
+  '1', '!',  0 ,  0 ,  0 ,      /* 17 Key1 */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 18 Unused */
+
+  'u', 'U', '(', '+',  0 ,      /* 21 KeyU */
+  'y', 'Y', '&','\'',  0 ,      /* 22 KeyY */
+  't', 'T', '%', '|',  0 ,      /* 23 KeyT */
+  'r', 'R', '$',  0 ,  0 ,      /* 24 KeyR */
+  'e', 'E', '#',  0 , KEY_ESC,  /* 25 KeyE */
+  'w', 'W', '"','\'',  0 ,      /* 26 KeyW */
+  'q', 'Q', '_', '@',  0 ,      /* 27 KeyQ */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 28 Unused */
+
+  'j', 'J','\\', '{',  0 ,      /* 31 KeyJ */
+  'h', 'H', ']', '>',  0 ,      /* 32 KeyH */
+  'g', 'G', '[', '<',  0 ,      /* 33 KeyG */
+  'f', 'F','\\', '.',  0 ,      /* 34 KeyF */
+  'd', 'D',  0 ,  0 ,  0 ,      /* 35 KeyD */
+  's', 'S',  0 ,  0 ,  0 ,      /* 36 KeyS */
+  'a', 'A',  0 ,  0 ,  0 ,      /* 37 KeyA */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 38 Unused */
+
+  'n', 'N','\'',  0 ,  0 ,      /* 41 KeyN */
+  'b', 'B', '?',  0 ,  0 ,      /* 42 KeyB */
+  'v', 'V', '!',  0 ,  0 ,      /* 43 KeyV */
+  'c', 'C', KEY_ESC,  0 ,  0 ,  /* 44 KeyC */
+  'x', 'X',  0 ,  0 ,  0 ,      /* 45 KeyX */
+  'z', 'Z',  0 ,  0 ,  0 ,      /* 46 KeyZ */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 47 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 48 Unused */
+
+  KEY_LEFTARROW,  0 , KEY_DOWNARROW,  0 ,  0 , /* 51 KeyLeft */
+  'm', 'M', '.', ',',  0 ,      /* 52 KeyM */
+  '.',  0 ,  0 ,  0 ,  0 ,      /* 53 Keyカタ */
+  ' ', ' ', ' ', ' ',  0 ,      /* 54 KeySpace  */
+  KEY_BACKSPACE, KEY_DELETE,  0 ,  0 ,  0 , /* 55 Backspace */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 56 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 57 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 58 Unused */
+
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 61 Unused */
+  ',',  0 ,  0 ,  0 ,  0 ,      /* 62 Key漢字 */
+  KEY_ENTER, 0 ,  0 ,  0 ,  0 ,/* 63 KeyEnter */
+  'p', 'P', '-', '=',  0 ,      /* 64 KeyP */
+  '0',  0 ,  0 ,  0 ,  0 ,      /* 65 Key0 */
+  '9', ')',  0 ,  0 ,  0 ,      /* 66 Key9 */
+  '8', '(',  0 ,  0 ,  0 ,      /* 67 Key8 */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 68 Unused */
+
+  KEY_RIGHTARROW,  0 , KEY_UPARROW,  0 ,  0 , /* 71 KeyRight */ 
+  'l', 'L', ':', ';', KEY_CTRLL,/* 72 KeyL */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 73 Unused */
+   0 ,  0 ,  0 ,  0 ,  0 ,      /* 74 Unused */
+  'o', 'O', '^', '~',  0 ,      /* 75 KeyO */
+  'i', 'I', ')', '*',  0 ,      /* 76 KeyI */
+  'k', 'K', '/', '}',  0 ,      /* 77 KeyK */
+   0 ,  0 ,  0 ,  0 ,  0        /* 78 Unused */
+};
+#else
 
 // Normal, Shift  , Ctrl , Alt    , Win
 // Normal, Shift  , Green, Orange , People
@@ -91,7 +163,7 @@ static const uint8_t AsciiTable[] PROGMEM = {
 
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 61 Unused */
   ',', ',', ':', ';',  0 ,      /* 62 KeyComma */
-  KEY_ENTER,  0 ,  0 ,  0 ,  0 ,/* 63 KeyEnter */
+  KEY_ENTER, 0 ,  0 ,  0 ,  0 , /* 63 KeyEnter */
   'p', 'P', ')', '=',  0 ,      /* 64 KeyP */
   '0',  0 ,  0 ,  0 ,  0 ,      /* 65 Key0 */
   '9', ')',  0 ,  0 ,  0 ,      /* 66 Key9 */
@@ -107,6 +179,7 @@ static const uint8_t AsciiTable[] PROGMEM = {
   'k', 'K', '[',  0 ,  0 ,      /* 77 KeyK */
    0 ,  0 ,  0 ,  0 ,  0        /* 78 Unused */
 };
+#endif
 
 void handler_getup(void);
 
@@ -340,4 +413,3 @@ void handler_getup(void) {
   // 監視コマンド送信
   if (_serial)_serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
 }
-
