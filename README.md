@@ -88,9 +88,9 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 「カナひら」「漢字」を押すとキーボードの印刷にない「.」「,」を表示します.
 XboxChatpad.cppの下記の箇所を修正してください
 ```
-// キーボード日本語対応
+// 日本語表記のチャットパット対応
 // #define JAPAN_KEY 0 //英語版
-// #define JAPAN_KEY 1 //日本語 
+// #define JAPAN_KEY 1 //日本語版
 #define JAPAN_KEY 0
 ```
 

@@ -13,10 +13,10 @@
 // 2017/10/28 修正: By Kei Takagi
 //            タイマ割り込みを使った監視、矢印キー、キー出力タイミング
 // 2017/10/29 修正: By Kei Takagi
-//            キーリピート、キークリック時点での表示の廃止：
-//            理が重いと受信バケットを取り逃がすため、キーを離したタイミングがとれない
-//            テスト機以外の構成でキーを押したときのチャタリングが起きやすい
-//            日本語キーボード対応
+//            ・キーリピート、キークリック時点での表示の廃止：
+//              理が重いと受信バケットを取り逃がすため、キーを離したタイミングがとれない
+//              テスト機以外の構成でキーを押したときのチャタリングが起きやすい
+//            ・日本語表記のチャットパット対応対応
 //
 
 #include "XboxChatpad.h"
@@ -26,12 +26,12 @@
 
 // 電源投入からの待ち時間
 // チャットパットは電源投入後500ms以上待って
-// InitMessage（87 02 8C 1F CC）を送信する必要がある
+// 監視コマンドを送信する必要がある
 #define STARTWAIT 500
 
-// キーボード日本語対応
+// 日本語表記のチャットパット対応
 // #define JAPAN_KEY 0 //英語版
-// #define JAPAN_KEY 1 //日本語 
+// #define JAPAN_KEY 1 //日本語版
 #define JAPAN_KEY 0
 
 static const uint8_t ShiftMask = (1 << 0);
@@ -41,7 +41,7 @@ static const uint8_t PeopleMask = (1 << 3);
 
 // Xbox Chatpad 初期化コマンド
 static const uint8_t InitMessage[]      = { 0x87, 0x02, 0x8C, 0x1F, 0xCC };
-// Xbox Chatpad 起きているか監視コマンド
+// Xbox Chatpad 監視コマンド
 static const uint8_t KeepAwakeMessage[]  = { 0x87, 0x02, 0x8C, 0x1B, 0xD0 };
 
 #if JAPAN_KEY == 1
