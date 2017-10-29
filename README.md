@@ -3,7 +3,7 @@
 ***※本バージョンはβ版です.大幅に仕様変更する可能性があります.***
 
 ## これは何？
-Xbox ChatpadをArduino化たSTM32F103でキーボードとして使うためのライブラリです.
+Xbox ChatpadをArduino化したSTM32F103でキーボードとして使うためのライブラリです.
 Microsoft製のXbox Chatpadで動作しますが、Microsoft製のXbox Chatpadが入手しにくいため、比較的入手しやすいクローン(例えば、TYX-517PCB1 Ver2.5)が代替品として使用出来ます.  
 Microsoft製のXbox Chatpadは、クローンより高速に起動します.  
 
