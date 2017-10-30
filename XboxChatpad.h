@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "HardwareSerial.h"
 #include "wiring_private.h"
+#include "wirish_time.h"
 #include "Arduino.h"
 
 // ハードウェアシリアルポート
@@ -83,6 +84,8 @@ class XboxChatpad {
     uint8_t _buffer[8];
     uint8_t _last_key0;
     uint8_t _last_key1;
+    uint32_t _last_ping;
+    uint8_t toggle;
   public:
     // キーボード利用開始
     uint8_t begin(HardwareSerial &);
@@ -96,6 +99,8 @@ class XboxChatpad {
     keyEvent read();
     // キーボード上LED制御
     uint8_t ctrl_LED(uint8_t swCaps, uint8_t swNum, uint8_t swScrol);
+    // 監視コマンド送信
+    void GetUp();
 };
 
 #endif

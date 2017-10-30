@@ -21,9 +21,6 @@
 
 #include "XboxChatpad.h"
 
-// タイマ割込間隔 1sec
-#define RATE 1000000
-
 // 電源投入からの待ち時間
 // チャットパットは電源投入後500ms以上待って
 // 監視コマンドを送信する必要がある
@@ -33,6 +30,22 @@
 // #define JAPAN_KEY 0 //英語版
 // #define JAPAN_KEY 1 //日本語版
 #define JAPAN_KEY 0
+
+// タイマー割り込みを1:使う 0:使わない
+#define TIMER 0
+
+// デバッグを1:使う 0:使わない
+#define DEBUG 0
+
+#if TIMER == 1
+// タイマ割込間隔 1sec
+#define RATE 1000000
+#endif
+
+#if DEBUG == 1
+#define LED_PIN PC13
+uint8_t toggle;
+#endif
 
 static const uint8_t ShiftMask = (1 << 0);
 static const uint8_t GreenSquareMask = (1 << 1);
@@ -126,7 +139,7 @@ static const uint8_t AsciiTable[] PROGMEM = {
    0 ,  0 ,  0 ,  0 ,  0 ,      /* 18 Unused */
 
   'u', 'U', '&',  0 ,  0 ,      /* 21 KeyU */
-  'y', 'Y', '^',  0 ,  0 ,      /* 22 KeyY */
+  'y', 'Y', '`',  0 ,  0 ,      /* 22 KeyY */
   't', 'T', '%',  0 ,  0 ,      /* 23 KeyT */
   'r', 'R', '#', '$',  0 ,      /* 24 KeyR */
   'e', 'E',  0 ,  0 , KEY_ESC,  /* 25 KeyE */
@@ -181,7 +194,9 @@ static const uint8_t AsciiTable[] PROGMEM = {
 };
 #endif
 
+#if TIMER == 0
 void handler_getup(void);
+#endif
 
 //
 // 利用開始(初期化)
@@ -217,8 +232,9 @@ uint8_t XboxChatpad::begin(HardwareSerial &serial) {
     _serial->write(InitMessage, sizeof(InitMessage));
     delay(30);
   }
-  Timer3.resume(); // タイマ割込開始
-
+#if TIMER == 1
+Timer3.resume(); // タイマ割込開始
+#endif
 ERROR:
   return err;
 }
@@ -232,8 +248,10 @@ ERROR:
 void XboxChatpad::end() {
   if (!_serial)return;
   _serial->end();
-  Timer3.pause();                   // タイマ停止
-  Timer3.detachCompare1Interrupt(); // コンパレータ1解放
+#if TIMER == 1
+Timer3.pause();                   // タイマ停止
+Timer3.detachCompare2Interrupt(); // コンパレータ1解放
+#endif
   _serial = NULL;
   return;
 }
@@ -248,13 +266,20 @@ uint8_t XboxChatpad::init() {
   _serial = NULL;
   _last_key0 = 0;
   _last_key1 = 0;
+
+#if TIMER == 1
   // タイマーの設定
   Timer3.pause();                                // タイマ停止
-  Timer3.setChannel1Mode(TIMER_OUTPUTCOMPARE);   //
+  Timer3.setChannel2Mode(TIMER_OUTPUTCOMPARE);   //
   Timer3.setPeriod(RATE);                        // in microseconds
-  Timer3.setCompare1(1);                         // overflow might be small
-  Timer3.attachCompare1Interrupt(handler_getup); // コンパレータ1にて割り込み発生
+  Timer3.setCompare2(1);                         // overflow might be small
+  Timer3.attachCompare2Interrupt(handler_getup); // コンパレータ1にて割り込み発生
   Timer3.refresh();                              // タイマ更新
+#endif
+
+#if DEBUG == 1
+pinMode(LED_PIN, OUTPUT);
+#endif
   return 0;
 }
 
@@ -385,6 +410,9 @@ keyEvent XboxChatpad::read() {
 ERROR:
     in.value = KEY_ERROR;
 DONE:
+#if TIMER == 0
+  GetUp();
+#endif
   return in.kevt;
 }
 
@@ -406,10 +434,36 @@ uint8_t XboxChatpad::ctrl_LED(uint8_t swCaps, uint8_t swNum, uint8_t swScrol) {
 // 戻り値
 //  なし
 //
+#if TIMER == 1
 void handler_getup(void) {
   // KeepAwakeMessageを定期的に送信する必要がある。
   // 送信しない場合、チャットパッドはスリープ状態に戻る
   // 毎秒KeepAwakeMessageを送信する
   // 監視コマンド送信
+#if DEBUG == 1
+  toggle ^= 1;
+  digitalWrite(LED_PIN, toggle);
+#endif
   if (_serial)_serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
+}
+#endif
+
+// 起きろコマンド送信
+void XboxChatpad::GetUp() {
+#if TIMER == 0
+  // KeepAwakeMessageを定期的に送信する必要がある。
+  // 送信しない場合、チャットパッドはスリープ状態に戻る
+  // 毎秒KeepAwakeMessageを送信する
+  // 監視コマンド送信
+  if(!_serial)return;
+  uint32_t time = millis();
+  if (time - _last_ping > 1000) {
+#if DEBUG == 1
+    toggle ^= 1;
+    digitalWrite(LED_PIN, toggle);
+#endif
+    _last_ping = time;
+    _serial->write(KeepAwakeMessage, sizeof(KeepAwakeMessage));
+  }
+#endif
 }
