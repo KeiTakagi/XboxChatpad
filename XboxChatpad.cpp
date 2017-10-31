@@ -17,6 +17,7 @@
 //              理が重いと受信バケットを取り逃がすため、キーを離したタイミングがとれない
 //              テスト機以外の構成でキーを押したときのチャタリングが起きやすい
 //            ・日本語表記のチャットパット対応対応
+// 2017/10/31 修正: SD使用時にフリーズ回避のためタイマ割り込の方法をオーバーフローへ変更 By Kei Takagi
 //
 
 #include "XboxChatpad.h"
@@ -32,7 +33,7 @@
 #define JAPAN_KEY 0
 
 // タイマー割り込みを1:使う 0:使わない
-#define TIMER 0
+#define TIMER 1
 
 // デバッグを1:使う 0:使わない
 #define DEBUG 0
@@ -250,7 +251,6 @@ void XboxChatpad::end() {
   _serial->end();
 #if TIMER == 1
 Timer3.pause();                   // タイマ停止
-Timer3.detachCompare2Interrupt(); // コンパレータ1解放
 #endif
   _serial = NULL;
   return;
@@ -268,13 +268,19 @@ uint8_t XboxChatpad::init() {
   _last_key1 = 0;
 
 #if TIMER == 1
-  // タイマーの設定
-  Timer3.pause();                                // タイマ停止
-  Timer3.setChannel2Mode(TIMER_OUTPUTCOMPARE);   //
-  Timer3.setPeriod(RATE);                        // in microseconds
-  Timer3.setCompare2(1);                         // overflow might be small
-  Timer3.attachCompare2Interrupt(handler_getup); // コンパレータ1にて割り込み発生
-  Timer3.refresh();                              // タイマ更新
+  Timer3.pause();                   // タイマー停止
+  Timer3.setPrescaleFactor(7200);   // システムクロック 72MHzを10ｋHzに分周
+  Timer3.setOverflow(10000);        // 最大値を1秒に設定
+ 
+  Timer3.attachInterrupt(           // 割り込みハンドラの登録
+      TIMER_UPDATE_INTERRUPT,       // 呼び出し条件は、カウンターオーバーフロー更新時
+      handler_getup                 // 呼び出す関数
+    );  
+
+  Timer3.setCount(0);               // カウンタを0に設定
+  Timer3.refresh();                 // タイマ更新
+  Timer3.resume();                  // タイマースタート
+
 #endif
 
 #if DEBUG == 1
