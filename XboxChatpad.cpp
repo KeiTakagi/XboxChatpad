@@ -194,7 +194,7 @@ static const uint8_t AsciiTable[] PROGMEM = {
 };
 #endif
 
-#if TIMER == 0
+#if TIMER == 1
 void handler_getup(void);
 #endif
 
