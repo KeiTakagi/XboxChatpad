@@ -103,5 +103,4 @@ class XboxChatpad {
     // 監視コマンド送信
     void GetUp();
 };
-
 #endif
