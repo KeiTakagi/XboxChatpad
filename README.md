@@ -66,6 +66,7 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 ****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_v85_difference/ps22tty.cpp)を差し替えてください.****
 
 ## キーボードに印刷されていないキー操作について
+
 |**動作**|**操作**|
 |--------|--------|
 |上移動|緑□ + →|
