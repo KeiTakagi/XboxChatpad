@@ -16,17 +16,19 @@
 //            キーリピート、キークリック時点での表示の廃止：
 //            理が重いと受信バケットを取り逃がすため、キーを離したタイミングがとれない
 //            テスト機以外の構成でキーを押したときのチャタリングが起きやすい
-// 2017/10/31 修正: SD使用時にフリーズ回避のためタイマ割り込の方法をオーバーフローへ変更 By Kei Takagi
 //
 
 #ifndef __XBOXCHATPAD_H__
 #define __XBOXCHATPAD_H__
 
 #include <stdint.h>
+#include "Arduino.h"
 #include "HardwareSerial.h"
+
+#if TIMER == 1
 #include "wiring_private.h"
 #include "wirish_time.h"
-#include "Arduino.h"
+#endif
 
 // ハードウェアシリアルポート
 static HardwareSerial *_serial;
@@ -103,4 +105,5 @@ class XboxChatpad {
     // 監視コマンド送信
     void GetUp();
 };
+
 #endif
