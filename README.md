@@ -1,6 +1,10 @@
 # Arduino STM32 Xbox Chatpad ライブラリ
-**[日本語表記](#日本語表記)のチャットパッドに対応しました**
+
 ***※本バージョンはβ版です.大幅に仕様変更する可能性があります.***
+
+- [豊四季TinyBASIC Ver0.86β](https://github.com/Tamakichi/ttbasic_arduino_stm32)に対応しました <span style="color:red;">**(NEW)**</span>
+- [日本語表記](#日本語表記)のチャットパッドに対応しました
+
 
 ## これは何？
 Xbox ChatpadをArduino化したSTM32F103でキーボードとして使うためのライブラリです.
@@ -59,11 +63,13 @@ Xbox Chatpadの改造や、本アプリケーションの使用は、使用者�
 基本的な使い方のサンプルは、XboxChatpad_exsample.inoに置いておきます.  
 最初にサンプルでXbox Chatpadの動作を確認してから豊四季 Tiny BASIC等で使用してください.  
 Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来ない時間があります.  
-気になる方はXboxChatpad.cppを修正してください.  
+気になる方はXboxChatpad.hを修正してください.  
 
 <a name="改造"></a>
-## たま吉さんの豊四季 Tiny BASIC V0.85で使用したい場合
-****[豊四季 Tiny BASIC for Arduino STM32 V0.85](https://github.com/Tamakichi/ttbasic_arduino/tree/ttbasic_arduino_lcd_plus)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_v85_difference/ps22tty.cpp)を差し替えてください.****
+
+## たま吉さんの豊四季 Tiny BASIC V0.86で使用したい場合
+****[豊四季 Tiny BASIC for Arduino STM32 V0.86β](https://github.com/Tamakichi/ttbasic_arduino_stm32)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_difference/ps22tty.cpp)を差し替えてください.****
+
 
 ## キーボードに印刷されていないキー操作について
 
@@ -88,21 +94,23 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 
 ## 日本語表記のXbox Chatpadを使用する場合
 「カナひら」「漢字」を押すとキーボードの印刷にない「.」「,」を表示します.
-XboxChatpad.cppの下記の箇所を修正してください
+XboxChatpad.hの下記のように『JAPAN_KEY 0』(英語版)から『JAPAN_KEY 1』（日本語版）へ修正してください
 ```
 // 日本語表記のチャットパット対応
-// #define JAPAN_KEY 0 //英語版
-// #define JAPAN_KEY 1 //日本語版
-#define JAPAN_KEY 0
+// #define JAPAN_KEY 0 ←英語版(デフォルト)
+// #define JAPAN_KEY 1 ←日本語版
+#define JAPAN_KEY 1
 ```
 
 ## キーボードの定義を変えたい場合
-キーボードの定義を変更したい場合はXboxChatpad.cppのsAsciiTable[] を変更してください.  
+キーボードの定義を変更したい場合はXboxChatpad.hのsAsciiTable[] を変更してください.  
 配列の順番は、Normal, shif, Green, orange , Peopleになります.
+
 
 ## 豊四季 Tiny BASIC以外で使いたい場合
 Serialからの入力や、PS/2キーボードライブラリと置き換えて使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います.  
 使用例を参考に置き換えてください.
+あわせて、[豊四季TinyBasic Ver0.85以前のバージョンで使用する場合](#TTBASIC086)も対応してください.
 ```
 使用例）
 
@@ -122,8 +130,21 @@ inline char c_getch(void) {
 Sirialx.available() ← c_kbhit()で置き換え
 Sirialx.read()      ← c_getch()で置き換え
 ```
+
+<a name="TTBASIC086"></a>
+## 豊四季TinyBasic Ver0.85以前のバージョンで使用する場合
+デフォルトは豊四季TinyBasic Ver0.86以降の設定にしています。
+XboxChatpad.hの下記のように『TTBASIC086 1』(豊四季TinyBasic 0.86以降)から『TTBASIC086 0』（豊四季TinyBasic 0.85以前）へ修正してください
+```
+// 豊四季TinyBasick個別バージョン対応
+// #define TTBASIC086 0 ←豊四季TinyBasic 0.85以前
+// #define TTBASIC086 1 ←豊四季TinyBasic 0.86以降 デフォルト
+#define TTBASIC086 0
+```
+
 ## 問題点
 - キーリピートを実装したところ、処理中にキーを離した状態を取得出来ないため見送ります.そのため、キーを離したタイミングで文字を表示する仕様とします.
+
 
 ## 今後の予定について
 - なし
