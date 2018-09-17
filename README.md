@@ -67,7 +67,7 @@ Xbox Chatpad クローンの場合、電源投入から2～5秒程使用出来�
 
 <a name="改造"></a>
 
-## たま吉さんの豊四季 Tiny BASIC V0.86で使用したい場合
+## たま吉さんの豊四季 Tiny BASIC V0.86βで使用したい場合
 ****[豊四季 Tiny BASIC for Arduino STM32 V0.86β](https://github.com/Tamakichi/ttbasic_arduino_stm32)の手順に沿ってインストールしたあと、[差替ファイル](https://github.com/KeiTakagi/XboxChatpad/blob/master/ttbasic_difference/ps22tty.cpp)を差し替えてください.****
 
 
