@@ -3,7 +3,6 @@
 **_※本バージョンは β 版です.大幅に仕様変更する可能性があります._**
 
 - [豊四季 TinyBASIC Ver0.87β](https://github.com/Tamakichi/ttbasic_arduino_stm32)に対応しました <span style="color:red;">**(NEW)**</span>
-- [日本語表記](#日本語表記)のチャットパッドに対応しました
 
 ## これは何？
 
@@ -126,7 +125,7 @@ XboxChatpad.h の下記のように『JAPAN_KEY 0』(英語版)から『JAPAN_KE
 
 ## 豊四季 Tiny BASIC 以外で使いたい場合
 
-Serial からの入力や、PS/2 キーボードライブラリと置き換えて使用する際は、Sirialx.available() Sirialx.read()と置き換えることになるかと思います.  
+Serial からの入力や、PS/2 キーボードライブラリと置き換えて使用する際は、Serialx.available()、Serialx.read()と置き換えることになるかと思います.  
 使用例を参考に置き換えてください.
 あわせて、[豊四季 TinyBasic Ver0.85 以前のバージョンで使用する場合](#TTBASIC086)も対応してください.
 
@@ -144,10 +143,12 @@ inline char c_getch(void) {
   }
   return c;
 }
+
 #define c_kbhit( ) kb.available()
 
-Sirialx.available() ← c_kbhit()で置き換え
-Sirialx.read()      ← c_getch()で置き換え
+
+Serialx.available() ← c_kbhit()で置き換え
+Serialx.read()      ← c_getch()で置き換え
 ```
 
 <a name="TTBASIC086"></a>
